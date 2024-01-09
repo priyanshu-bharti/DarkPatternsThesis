@@ -1,0 +1,164 @@
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+:root {
+    /* Color Styles */
+    --color-black: rgb(27, 26, 36);
+    --color-black-absolute: rgb(7, 6, 16);
+    --color-black-transparent: rgb(27, 26, 36 / 0.5);
+    --color-primary-base: rgb(245, 143, 41);
+    --color-primary-dark: rgb(215, 113, 11);
+    --color-primary-light: rgb(245, 165, 71);
+    --color-primary-lighter: rgb(250, 210, 149);
+    --color-secondary-base: rgb(99, 33, 212);
+    --color-secondary-dark: rgb(55, 11, 128);
+    --color-secondary-light: rgb(139, 73, 252);
+    --color-secondary-lighter: rgb(181, 180, 228);
+    --color-white: rgb(251, 251, 251);
+    --color-white-transparent: rgb(251, 251, 251 / 0.4);
+
+    /* Text-size styles */
+    --text-heading-1: 2rem;
+    --text-heading-2: 1.5rem;
+    --text-large-body-text: 1.25rem;
+    --text-regular-body-text: 1rem;
+    --text-small-body-text: 0.88rem;
+
+    /* Effect styles */
+    --shadow-primary: 0px 0px 10px rgba(250, 210, 149, 0.25);
+    --shadow-secondary: 0px 0px 10px rgba(181, 180, 228, 0.2);
+}
+
+body {
+    /* Set the extension window size */
+    min-width: 400;
+    /* min-height: 600; */
+    max-width: 800;
+    /* max-height: 600; */
+
+    /* Base colors for the extension */
+    background: var(--color-black-absolute);
+    color: var(--color-white);
+
+    /* Default Text Style */
+    font-family: "Outfit", sans-serif;
+    font-size: var(--text-regular-body-text);
+}
+
+h1,
+h2 {
+    font-family: "Space Grotesk", sans-serif;
+}
+
+h1 {
+    font-size: var(--text-heading-1);
+    text-transform: uppercase;
+}
+
+h2 {
+    font-size: var(--text-heading-2);
+}
+
+a {
+    color: var(--color-secondary-lighter);
+}
+
+.container {
+    padding: 2rem;
+    display: grid;
+    gap: 2rem;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.grid {
+    display: flex;
+    gap: 2rem;
+}
+
+.card {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+
+    & p,
+    & span {
+        font-size: var(--text-small-body-text);
+    }
+
+    & p.count {
+        font-size: var(--text-heading-1);
+    }
+
+    & p.fraction {
+        font-size: var(--text-heading-2);
+    }
+
+    & hr {
+        width: 30%;
+        height: 0.15rem;
+        background-color: var(--color-white);
+        appearance: none;
+    }
+
+    & span {
+        text-decoration: underline;
+    }
+
+    .score {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.card--primary {
+    background: var(--color-secondary-base);
+}
+
+.clickable {
+    cursor: pointer;
+    transition: transform .1s ease-in-out;
+}
+
+.clickable:hover {
+    transform: scale(1.05);
+}
+
+.card--secondary {
+    background: var(--color-secondary-dark);
+}
+
+.center {
+    text-align: center;
+}
+
+.button {
+    background: var(--color-primary-base);
+    border: none;
+    padding: 1rem 1.5rem;
+    color: var(--color-white);
+    font-weight: bold;
+    border-radius: .5rem;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: .3rem;
+}

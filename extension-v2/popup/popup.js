@@ -1,0 +1,253 @@
+let detected = false;
+
+function extractAllTexts() {
+    // List of allowed elements, which usually contain strings of text
+    let elements = [
+        "SPAN",
+        "DIV",
+        "B",
+        "A",
+        "MAIN",
+        "SECTION",
+        "ARTICLE",
+        "U",
+        "CENTER",
+        "P",
+        "H1",
+        "H2",
+        "H3",
+        "H4",
+        "H5",
+        "H6",
+        "HEADER",
+        "FOOTER",
+        "SUB",
+        "SUP",
+    ];
+
+    // Step - 2 : Extract Text
+    function getTexts() {
+        // Stores the extracted texts
+        const text = [];
+
+        // Traverses the dom recusively and extracts all texts from allowed elements.
+        function walk(node) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                let textContent = node.textContent;
+
+                if (
+                    textContent &&
+                    textContent.length >= 8 &&
+                    textContent.length <= 512
+                ) {
+                    textContent = textContent.trim();
+                    if (
+                        elements.includes(node.tagName) &&
+                        !text.includes(textContent) &&
+                        node.childElementCount === 0
+                    ) {
+                        text.push(textContent);
+                    }
+                }
+
+                for (const childNode of node.childNodes) {
+                    walk(childNode);
+                }
+            }
+        }
+
+        // Walk the DOM and return all extracted texts
+        walk(document.body);
+        return text;
+    }
+
+    // Replaces all \n and \t with spaces and retuns list of unqiue strings.
+    function cleanString(arr) {
+        const list = [];
+        for (let i = 0; i < arr.length; i++) {
+            const temp = arr[i].replace(/[\n\t]+/g, " ");
+            if (!list.includes(temp)) list.push(temp);
+        }
+        return list;
+    }
+
+    // Stores the unique sanitized strings
+    const results = cleanString(getTexts());
+
+    return results;
+}
+
+// Replaces all \n and \t with spaces and retuns list of unqiue strings.
+function cleanString(arr) {
+    const list = [];
+
+    for (let i = 0; i < arr.length; i++) {
+        const temp = arr[i].replace(/[\n\t]+/g, " ");
+        if (!list.includes(temp)) list.push(temp);
+    }
+
+    return list;
+}
+
+// Make dark pattern prediction
+async function predict(result) {
+    console.log("Making network request...");
+    let response = await fetch("http://127.0.0.1:5001/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texts: result }),
+    });
+
+    response = await response.json();
+    // console.log(response);
+    return response;
+}
+
+// Executes on the tab - Get data from extension and highlight DOM elements
+function highlightDOM(darkPatterns) {
+    console.log(darkPatterns);
+
+    let elements = [...document.querySelectorAll("*")];
+
+    function cleanString(str) {
+        return str.replace(/[\n\t]+/g, " ");
+    }
+
+    let highlightedNodes = [];
+
+    // Provide description for the pattern category
+    function getPatternCategory(pattern) {
+        switch (pattern) {
+            case "Urgency":
+                return "Urgency : Pressure you to take action within a limited time.";
+            case "Scarcity":
+                return "Scarcity : Fake indication of limited supply or popularity.";
+            case "Misdirection":
+                return "Misdirection : Misleading you with confusing wording.";
+            case "Social Proof":
+                return "Social Proof : Creates illusion of trust and credibility by endorsements.";
+            case "Obstruction":
+                return "Obstruction : Placing barriers for doing a task or getting information.";
+            case "Sneaking":
+                return "Sneaking : Secretly add something to your existing transaction.";
+            case "Forced Action":
+                return "Forced Action : Directing you to do something undesirable and unnecessary.";
+            default:
+                return "Unknown pattern, this element will most probably deceieve you in a certain way...";
+        }
+    }
+
+    // Locate the element and highlight it.
+    for (data in darkPatterns) {
+        for (let i = 0; i < elements.length; i++) {
+            const currentElement = elements[i];
+            const sanitizedString = cleanString(currentElement.textContent);
+
+            // If the sanitized string matches the prediction, then element should be highlighted.
+            if (data === sanitizedString) {
+                highlightedNodes.push(currentElement);
+            }
+        }
+
+        // Highlight each element and attach a popup to it.
+        highlightedNodes.forEach((el) => {
+            const pattern = darkPatterns[data];
+            el.style.backgroundColor = "#ffff0077";
+            el.setAttribute("dark-pattern", pattern);
+            el.title = getPatternCategory(pattern);
+            // attachPopup(el);
+        });
+    }
+    console.log(highlightedNodes);
+
+    const results = {
+        count: highlightedNodes.length,
+        score: 10 - Math.ceil((highlightedNodes.length / elements.length) * 10),
+        texts: highlightedNodes.map((el) => el.textContent),
+    };
+
+    console.log(results);
+
+    return results;
+}
+
+// Perform this on extension button click
+document.getElementById("detectBtn").addEventListener("click", async () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+        // Get the currently active tab
+        const currentTab = tabs[0];
+
+        // Execute get all text function on the current tab and extract texts
+        const [{ result }] = await chrome.scripting.executeScript({
+            target: { tabId: currentTab.id },
+            func: extractAllTexts,
+        });
+
+        // Make network request for dark pattern predictions
+        const cleanResults = cleanString(result);
+        console.log(cleanResults);
+
+        try {
+            // Stores the text-category pairs for valid dark patterns
+            const darkPatterns = await predict(cleanResults);
+
+            // Send patterns to the current tab and highlight the dom
+            const [{ result }] = await chrome.scripting.executeScript({
+                target: { tabId: currentTab.id },
+                func: highlightDOM,
+                args: [darkPatterns],
+            });
+
+            // Contains the results from detecting the dark patterns
+            console.log(result);
+            console.log(currentTab.url);
+
+            let wordCloud = await fetch("http://127.0.0.1:5001/wordcloud", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ texts: result.texts }),
+            });
+
+            wordCloud = await wordCloud.json();
+            console.log(wordCloud);
+
+            const statisticsObj = {
+                url: currentTab.url,
+                dark_pattern_count: result.count,
+                website_score: result.score,
+                word_cloud: wordCloud,
+            };
+
+            localStorage.setItem("wordCloud", JSON.stringify(statisticsObj));
+            console.log(localStorage.getItem("wordCloud"));
+
+            const count = document.getElementById("count");
+            count.innerText = result.count;
+            const numerator = document.getElementById("numerator");
+            numerator.innerText = result.score;
+        } catch (error) {
+            console.error(error.message);
+        }
+    });
+
+    detected = true;
+});
+
+// Perform this on extension button click
+document.getElementById("publishBtn").addEventListener("click", async () => {
+    const statisticsObj = localStorage.getItem("wordCloud");
+    console.log(statisticsObj);
+
+    if (detected && statisticsObj) {
+        let publishResponse = await fetch(
+            "http://localhost:5002/v1/statistics/upsert",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: statisticsObj,
+            }
+        );
+
+        console.log(publishResponse.json());
+    }
+});

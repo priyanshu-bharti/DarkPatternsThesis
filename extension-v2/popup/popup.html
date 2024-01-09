@@ -1,0 +1,46 @@
+<html>
+
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Space+Grotesk:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="popup.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Mr.Keeper</h1>
+            <a href="#" target="_blank"><small>View Github Repository</small></a>
+        </header>
+
+        <h2 class="center" >Dark Pattern Results</h2>
+
+        <div class="grid">
+            <section id="detectBtn" class="card card--primary clickable">
+                <p>Patterns Detected</p>
+                <p class="count" id="count"">N/A</p>
+                <span>Refresh</span>
+            </section>
+            <section id="scoreCard" class="card card--secondary">
+                <p>Website Score</p>
+                <div class="score">
+                    <p class="fraction" id="numerator" >?</p>
+                    <hr>
+                    <p class="fraction">10</p>
+                </div>
+            </section>
+        </div>
+
+        <p class="center">Click on the button below to publish the results on our website.</p>
+        
+        <button id="publishBtn" class="button button-primary clickable" >Publish data to website &rarr;</button>
+        
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
