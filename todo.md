@@ -4,6 +4,7 @@ Issues
 - Navbar Login Logout Labels not changing properly
 
 [/dashboard page]
+- Getting 401 not authenticated error on visitiing this page (while being logged in) after the 1st login.
 - Make the publish and edit button work
 - On clicking edit button, navigate to /review page
 
