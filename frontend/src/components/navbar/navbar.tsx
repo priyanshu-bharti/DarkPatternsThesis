@@ -40,7 +40,8 @@ const NavigationBar = () => {
                     ))}
                 </ul>
             </div>
-            <div className="navbar-end">
+            <div className="navbar-end gap-6">
+                <Link href="/dashboard"><i className="ri-pages-line"></i> Dashboard</Link>
                 <NavbarLoginButton />
             </div>
         </div>
