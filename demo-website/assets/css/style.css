@@ -140,6 +140,10 @@ body::-webkit-scrollbar-thumb:hover { background: hsl(0, 0%, 70%); }
   #REUSED STYLE
 \*-----------------------------------*/
 
+a.navbar-branding {
+  color: var(--salmon-pink) !important
+}
+
 .container { padding: 0 15px; }
 
 .has-scrollbar { padding-bottom: 5px; }

@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "server": "cd backend && pnpm run dev",
-        "client": "cd frontend && pnpm run dev"
+        "client": "cd frontend && pnpm run dev",
+        "ai": "cd classifier && python3 multi-server.py"
     },
     "keywords": [],
     "author": "",
