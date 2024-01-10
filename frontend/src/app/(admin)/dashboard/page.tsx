@@ -10,6 +10,7 @@ const DashboardPage = () => {
     const [publishedCount, setPublishedCount] = React.useState<number>(0);
 
     React.useEffect(() => {
+        console.log("auth token : ", localStorage.getItem("auth_token"))
         axios
             .get("http://localhost:5002/v1/posts/all", {
                 headers: {

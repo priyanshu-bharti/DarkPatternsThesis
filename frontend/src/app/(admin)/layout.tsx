@@ -4,7 +4,7 @@ import "../globals.css";
 import "remixicon/fonts/remixicon.css";
 import NavigationBar from "@/components/navbar/navbar";
 
-const sansFont = Space_Grotesk({ subsets: ["latin"] });
+const sansFont = Space_Grotesk({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
     title: "Mr. Keeper - Detect Dark patterns on the web.",
