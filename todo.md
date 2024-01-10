@@ -4,18 +4,6 @@ Issues
 
 -   Navbar Login Logout Labels not changing properly
 
-[/dashboard page]
-
--   If you visit dashboard after a while, it throws 401 unauthorized error. However, if you immediately use the dashboard after login, it works fine.
--   Make the publish and edit button work
--   On clicking edit button, navigate to /review page
-
-[/review page]
-
--   On clicking on publish, make permanent changes to the databases with the current value.
--   On cicking on discard, navigate back to /dashboard
--   When coming from the /dashboard page, the form fields should be filled with the corresponding post.
--   When clicking on submit, make permanent changes to the database with the updated form field values.
 
 [For Me]
 

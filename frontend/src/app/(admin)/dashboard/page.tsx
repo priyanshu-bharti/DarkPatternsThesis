@@ -10,7 +10,7 @@ const DashboardPage = () => {
     const [publishedCount, setPublishedCount] = React.useState<number>(0);
 
     React.useEffect(() => {
-        console.log("auth token : ", localStorage.getItem("auth_token"))
+        console.log("auth token : ", localStorage.getItem("auth_token"));
         axios
             .get("http://localhost:5002/v1/posts/all", {
                 headers: {
@@ -68,13 +68,8 @@ const DashboardPage = () => {
                 {posts.map((post) => (
                     <ReviewPostCard
                         key={post.post_id}
-                        image={post.image}
-                        category={post.category}
-                        url={post.url}
-                        shortDescription={post.short_description}
-                        longDescription={post.long_description}
+                        post={post}
                         setPosts={setPosts}
-                        postId={post.post_id}
                     />
                 ))}
             </div>

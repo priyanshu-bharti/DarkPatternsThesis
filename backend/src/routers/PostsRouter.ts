@@ -5,6 +5,7 @@ import {
     findOnePost,
     getAllPosts,
     getAllPublishedPosts,
+    publishPost,
     updatePost,
 } from "../controllers/PostsController";
 import { v4 as uuidv4 } from "uuid";
@@ -27,8 +28,9 @@ const upload = multer({ storage });
 
 postRouter.get("/", getAllPublishedPosts);
 postRouter.get("/all", verifyToken, getAllPosts);
-postRouter.post("/",upload.single("file"), createPost);
+postRouter.post("/", upload.single("file"), createPost);
 postRouter.get("/:post_id", findOnePost);
+postRouter.put("/publish/:post_id", publishPost);
 postRouter.put("/:post_id", verifyToken, updatePost);
 postRouter.delete("/:post_id", verifyToken, deletePost);
 

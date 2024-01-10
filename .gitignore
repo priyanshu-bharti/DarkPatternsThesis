@@ -4,3 +4,4 @@ Prompt.md
 extension/
 classifier/pickles/bert
 classifier/pickles/ensemble
+backend/public/images

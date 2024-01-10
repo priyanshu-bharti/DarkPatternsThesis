@@ -13,19 +13,19 @@ function base64_encode(file: string): string {
 
 export const getAllPosts = async (req: Request, res: Response) => {
     const posts = await Posts.find();
-        const allPosts = posts.map((post) => {
-            const image = base64_encode(post.image ?? "");
-            return {
-                post_id: post.post_id,
-                url: post.url,
-                category: post.category,
-                short_description: post.short_description,
-                long_description: post.long_description,
-                published: post.published,
-                image: image,
-            };
-        });
-    
+    const allPosts = posts.map((post) => {
+        const image = base64_encode(post.image ?? "");
+        return {
+            post_id: post.post_id,
+            url: post.url,
+            category: post.category,
+            short_description: post.short_description,
+            long_description: post.long_description,
+            published: post.published,
+            image: image,
+        };
+    });
+
     res.status(200).json({ status: "success", data: allPosts });
 };
 
@@ -35,6 +35,20 @@ export const findOnePost = async (req: Request, res: Response) => {
 
     if (post) res.status(200).json({ status: "success", data: post });
     else res.status(404).json({ status: "success", data: "not found" });
+};
+
+export const publishPost = async (req: Request, res: Response) => {
+    const postID = req.params.post_id;
+    const updated = await Posts.findOneAndUpdate(
+        { post_id: postID },
+        { $set: { published: true } }, // Set the 'published' field to true
+        { new: true } // Return the updated document
+    );
+    if (updated) {
+        res.status(200).json({ status: "success", data: updated });
+    } else {
+        res.status(404).json({ status: "error", message: "Post not found" });
+    }
 };
 
 export const updatePost = async (req: Request, res: Response) => {

@@ -1,26 +1,19 @@
+"use client";
+
 import { PostResponse } from "@/app/(user)/posts/page";
 import axios from "axios";
 import Link from "next/link";
 import React from "react";
 
-interface Props {
-    postId: string;
-    image: string;
-    shortDescription: string;
-    longDescription: string;
-    url: string;
-    category: string;
-    setPosts: React.Dispatch<React.SetStateAction<PostResponse[]>>;
-}
-
 function handlePostDelete(
     setPosts: React.Dispatch<React.SetStateAction<PostResponse[]>>,
-    id: string
+    id: string,
+    token: string
 ) {
     axios
         .delete(`http://localhost:5002/v1/posts/${id}`, {
             headers: {
-                Authorization: localStorage.getItem("auth_token"),
+                Authorization: token,
             },
         })
         .then((res) => {
@@ -29,7 +22,7 @@ function handlePostDelete(
             axios
                 .get("http://localhost:5002/v1/posts/all", {
                     headers: {
-                        Authorization: localStorage.getItem("auth_token"),
+                        Authorization: token,
                     },
                 })
                 .then((response) => {
@@ -39,47 +32,79 @@ function handlePostDelete(
         });
 }
 
-const ReviewPostCard = ({
-    image,
-    category,
-    longDescription,
-    shortDescription,
-    url,
-    postId,
-    setPosts,
-}: Props) => {
+function handlePublish(
+    setPosts: React.Dispatch<React.SetStateAction<PostResponse[]>>,
+    post: PostResponse,
+    token: string
+) {
+    axios
+        .put(`http://localhost:5002/v1/posts/publish/${post.post_id}`, {
+            headers: {
+                Authorization: token,
+            },
+        })
+        .then((res) => {
+            console.log(res);
+
+            axios
+                .get("http://localhost:5002/v1/posts/all", {
+                    headers: {
+                        Authorization: token,
+                    },
+                })
+                .then((response) => {
+                    console.log(response.data.data);
+                    setPosts(response.data.data);
+                });
+        });
+}
+
+interface Props {
+    post: PostResponse;
+    setPosts: React.Dispatch<React.SetStateAction<PostResponse[]>>;
+}
+
+const ReviewPostCard = ({ post, setPosts }: Props) => {
+    const [token, setToken] = React.useState("");
+
+    React.useEffect(() => {
+        setToken(localStorage.getItem("auth_token") ?? "");
+    });
+
     return (
         <div className="card bg-base-300 border border-gray-800">
             <figure>
-                <img src={`data:image/png;base64, ${image}`} alt="Shoes" />
+                <img src={`data:image/png;base64, ${post.image}`} alt="Shoes" />
             </figure>
             <div className="card-body gap-6">
-                <h2 className="card-title">{shortDescription}</h2>
+                <h2 className="card-title">{post.short_description}</h2>
                 <div className="card-actions">
                     <Link
-                        href={url}
+                        href={post.url}
                         className="badge badge-accent uppercase font-bold px-4 py-3"
                     >
-                        {url}
+                        {post.url}
                     </Link>
                     <div className="badge badge-primary uppercase font-bold px-4 py-3">
-                        {category}
+                        {post.category}
                     </div>
                 </div>
-                <p>{longDescription}</p>
+                <p>{post.long_description}</p>
                 <div className="card-actions">
-                    <button className="btn btn-primary">
+                    <button
+                        className="btn btn-success flex-1"
+                        onClick={() => {
+                            handlePublish(setPosts, post, token);
+                            alert("Post published!");
+                        }}
+                    >
                         Publish
                         <i className="ri-check-line"></i>
                     </button>
-                    <Link href="/review" className="btn btn-secondary">
-                        Edit
-                        <i className="ri-edit-line"></i>
-                    </Link>
                     <button
-                        className="btn btn-accent"
+                        className="btn btn-error flex-1"
                         onClick={() => {
-                            handlePostDelete(setPosts, postId);
+                            handlePostDelete(setPosts, post.post_id, token);
                         }}
                     >
                         Delete
