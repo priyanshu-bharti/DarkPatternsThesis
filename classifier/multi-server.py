@@ -8,7 +8,7 @@ import matplotlib
 app = Flask(__name__)
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model_path = './pickles/bert/bert_multi_class.pth'
+model_path = './pickles/bert_multi_class.pth'
 label_dict = {
     'Urgency': 0,
     'Not Dark Pattern': 1,
